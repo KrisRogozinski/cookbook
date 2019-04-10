@@ -6,7 +6,7 @@ import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class DataStorageService {
-  private baseUrl = '**';
+  private baseUrl = 'https://cookbook-81e90.firebaseio.com/';
   private recipesUrl = 'recipes.json';
 
   constructor(private http: HttpClient,
