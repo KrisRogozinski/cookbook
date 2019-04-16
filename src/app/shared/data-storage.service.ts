@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpRequest} from '@angular/common/http';
 import { RecipeService } from '../recipes/recipe.service';
 import { Recipe } from '../recipes/recipe.model';
 import { AuthService } from '../auth/auth.service';
@@ -15,16 +15,18 @@ export class DataStorageService {
               private auth: AuthService) {}
 
   storeRecipes() {
-    const token = this.auth.getToken();
-    return this.http.put(this.baseUrl + this.recipesUrl + '?auth=' + token, this.recipeService.getRecipes());
+    const req = new HttpRequest('PUT', this.baseUrl + this.recipesUrl, this.recipeService.getRecipes(),
+      {reportProgress: true});
+    return this.http.request(req);
   }
 
   getRecipes() {
-    const token = this.auth.getToken();
-    this.http.get(this.baseUrl + this.recipesUrl + '?auth=' + token)
+    this.http.get<Recipe[]>(this.baseUrl + this.recipesUrl, {
+      observe: 'body',
+      responseType: 'json'
+    })
       .pipe(map(
-        (response: any) => {
-          const recipes: Recipe[] = response;
+        (recipes) => {
           for (const recipe of recipes) {
             if (!recipe.ingredients) {
               recipe.ingredients = [];
